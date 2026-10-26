@@ -45,6 +45,26 @@ Revised plan
 It does not tell you not to build. It tells you which of your bets expire, and proposes the
 version that doesn't.
 
+## Self-test: we ran it on itself
+
+The first real run of the skill was on this repository. It scored itself **7 / 5 / 3** at 3,
+6 and 12 months:
+
+- 🔴 **Scaffolding exposure** — the keyword trigger hook is a hand-written intent router,
+  exactly what criterion 2 flags. It also grepped the whole hook payload, so a project path
+  containing "v2" fired it on every message.
+- 🔴 **Persistent-agent overlap** — the whole trigger apparatus boils down to a preference
+  ("before building, apply the 10x test") that a persistent agent will store in one line of
+  memory.
+- 🔴 **Durable moat** — a rubric in Markdown, under Apache 2.0, is copyable in a minute.
+- 🟢 What survives: the rubric itself and the independent reviewer subagent.
+
+We took the revised plan: the hook now reads only the prompt and matches whole words, the
+Codex section shrank to a pointer, the verdict gained a JSON block and an autonomous mode,
+and an [`evals/`](evals/) folder now tracks when the scaffolding can be deleted. A skill
+built on the Bitter Lesson should expect to be eaten by it. This one is designed to be
+useful for the next six to twelve months, and to tell you when it no longer is.
+
 ---
 
 ## The idea
@@ -82,6 +102,10 @@ model improves, and which parts only exist *because* the model is not good enoug
   before writing code.
 - **Answers in your language.** The rubric is in English; the verdict comes back in the
   language you write in.
+- **Works without a human.** Each verdict ends with a JSON block (scores, traffic lights,
+  `revised_plan_required`). In headless runs (`claude -p`, `codex exec`, CI, delegated
+  agents) the agent logs the verdict to `FUTURE_PROOF.md` and follows the revised plan
+  instead of waiting for an answer — unless that would change the scope the task asked for.
 
 ## The seven criteria
 
@@ -139,18 +163,20 @@ What goes where:
 |---|---|---|
 | `claude/skills/future-proof/` | `~/.claude/skills/future-proof/` | `~/.codex/skills/future-proof/` |
 | `claude/agents/future-proof-reviewer.md` | `~/.claude/agents/` | — |
-| `codex/AGENTS.md` | — | appended to `~/.codex/AGENTS.md` between markers |
+| `codex/AGENTS.md` (6-line pointer) | — | appended to `~/.codex/AGENTS.md` between markers |
 | `claude/hooks/future-proof-trigger.sh` (optional) | `~/.claude/hooks/` + `UserPromptSubmit` entry in `settings.json` | — |
 
 **Why a hook?** Claude Code already loads the skill when the request matches its
-description. The hook makes guard mode more reliable: when your prompt contains words like
-*from scratch*, *v2*, *rewrite* or *new product* (in English, French, Spanish or German), it
-adds a short reminder to the agent's context. It never blocks a prompt and stays silent
-otherwise. The installer backs up `settings.json` before touching it.
+description. The hook makes guard mode more reliable: when your prompt contains whole words
+like *from scratch*, *v2*, *rewrite the backend* or *new product* (in English, French,
+Spanish or German), it adds a short reminder to the agent's context. It reads only your
+prompt — not the project path or other metadata — never blocks, and stays silent otherwise.
+The installer backs up `settings.json` before touching it.
 
 **Why AGENTS.md for Codex?** Codex reads `AGENTS.md` on every turn, which is what makes the
-guard automatic there. The section is a condensed mirror of `SKILL.md`; the full rubric
-stays in the skill folder.
+guard automatic there. The section is a six-line pointer to the installed `SKILL.md`, so
+there is a single source of truth and nothing to keep in sync. For a project-level install,
+adjust the path in the pointer.
 
 For a single project instead of a global install, copy the skill folder to
 `.claude/skills/` at the repository root, or append `codex/AGENTS.md` to the project's
@@ -168,6 +194,26 @@ Start a fresh session and try:
 | *Fix the off-by-one in the pagination.* | **Nothing** — the skill stays quiet |
 
 Worked versions are in [`examples/`](examples/).
+
+## Evals
+
+The [`evals/`](evals/) folder exists to answer one question: **when can the scaffolding go?**
+
+```bash
+python3 evals/run_hook_evals.py     # 18 prompts: should the trigger hook fire or not? Free, instant.
+python3 evals/run_plan_evals.py     # 6 plans with an expected 12-month score range. One headless
+                                    # Claude Code run per plan.
+```
+
+- `triggers.jsonl` lists prompts with the expected behaviour of the hook and of the skill,
+  including traps such as a bug fix in a folder named `shop-v2`, "pivot table" or "rewrite
+  this error message".
+- `plans.jsonl` lists plans that should clearly fail (a 9-node agent graph, an OCR→LLM→regex
+  pipeline, a standalone memory app) or clearly pass (an agent-ready data API, agent payment
+  rails, an eval platform).
+
+Re-run both on every new model. When the skill triggers correctly without the hook, delete
+the hook. When the scores drift, revisit the rubric.
 
 ## Update and uninstall
 
@@ -188,15 +234,15 @@ future-proof/
 │   │   └── references/rubric.md     full rubric, read by the reviewer subagent
 │   ├── agents/future-proof-reviewer.md   the reviewer subagent (Claude Code)
 │   └── hooks/future-proof-trigger.sh     optional trigger hook (Claude Code)
-├── codex/AGENTS.md                  condensed mirror for Codex's always-on instructions
+├── codex/AGENTS.md                  six-line pointer for Codex's always-on instructions
+├── evals/                           trigger cases, scored plans, and their runners
 ├── examples/                        guard mode, diagnose mode, and when it stays silent
 ├── install.sh
 ├── README.md
 └── LICENSE
 ```
 
-`SKILL.md` and `rubric.md` are the source of truth. `codex/AGENTS.md` is a shorter mirror,
-because Codex loads it on every turn. If you edit one, edit the other.
+`SKILL.md` and `rubric.md` are the single source of truth; everything else points to them.
 
 ## Limits
 
@@ -204,7 +250,8 @@ because Codex loads it on every turn. If you edit one, edit the other.
   the output as an argument to weigh, not a number to optimize.
 - **The 10x assumption is deliberately aggressive.** Progress may be slower in your domain.
   The point is to find the bets that only work if it is.
-- **Keyword triggers are blunt.** The hook may fire on "rewrite this error message"; the
+- **Keyword triggers are blunt.** The hook misses major builds phrased without its keywords
+  (the skill description is the fallback) and can still fire on an ambiguous phrase; the
   skill is instructed to ignore small changes, but it can misjudge scale either way.
 - **No vendor roadmaps.** The skill is told never to invent market data or model release
   plans. If you see some in a verdict, it is a bug.
@@ -215,6 +262,12 @@ The framing comes from Tibo Sottiaux's interview on Lenny's Podcast (October 202
 Sutton's *The Bitter Lesson* (2019). This project is not affiliated with or endorsed by
 OpenAI, Lenny's Podcast or Rich Sutton.
 
+## About
+
+Built by Benjamin Polge, journalist covering AI and infrastructure at
+[JDN (Journal du Net)](https://www.journaldunet.com/), to turn an idea heard on a podcast into
+a habit for anyone building with coding agents.
+
 ## License
 
-[Apache 2.0](LICENSE) — Copyright 2026 Benjamin Polge
+[Apache 2.0](LICENSE) — Copyright 2026 Benjamin Polge for JDN (Journal du Net)

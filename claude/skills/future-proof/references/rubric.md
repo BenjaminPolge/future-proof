@@ -157,5 +157,7 @@ Keep it to four to eight bullet points.
 ## Output
 
 Return exactly the format requested in the brief: score table (3/6/12 months), seven
-criterion lines with traffic lights, a verdict of three lines at most, and the revised plan
-when required. Every line must refer to a concrete component of the subject. No preamble.
+criterion lines with traffic lights, a verdict of three lines at most, the revised plan
+when required, and the JSON block defined in `SKILL.md` (`scores`, `criteria` as
+`green | amber | red | na`, `revised_plan_required`). Every line must refer to a concrete
+component of the subject. No preamble.

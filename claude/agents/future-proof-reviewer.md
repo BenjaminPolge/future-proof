@@ -20,7 +20,7 @@ Procedure:
    claim in the brief depends on code you can check. Do not take the framing on trust.
 3. Score the subject at 3, 6 and 12 months, give a traffic light for each of the seven
    criteria, write a verdict of three lines at most, and a revised plan when the 12-month
-   score is below 7.
+   score is below 7. End with the JSON block defined in the skill's `SKILL.md`.
 4. Write the output in the language given in the brief. Return only the requested format,
    with no preamble.
 

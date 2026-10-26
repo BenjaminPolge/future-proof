@@ -90,6 +90,19 @@ Same rubric, same output, shorter if the user asks for a quick read.
      user choose before writing code. Do not start building either version until they do.
    - In diagnose mode, stop after the verdict.
 
+### Autonomous runs
+
+When no human is in the loop — a headless run (`claude -p`, `codex exec`), a CI job, a
+scheduled agent, or a parent agent that delegated the task to you — do not wait for a choice
+that nobody will make:
+
+- Write the verdict, including the JSON block, to `FUTURE_PROOF.md` at the repository root
+  (append, newest first, with the date), or to the location the task names.
+- 12-month score **below 7**: follow the revised plan, and say so in your final report.
+- 12-month score **7 or more**: follow the original plan.
+- If the revised plan would change the scope the task explicitly asked for, follow the
+  original plan instead and flag the verdict prominently in your final report.
+
 ---
 
 ## Output format
@@ -117,6 +130,29 @@ Revised plan (only if 12-month score < 7)
 - Change: …
 - First step: …
 ```
+
+Then, for machines (CI, other agents, the eval runner), a fenced JSON block:
+
+```json
+{
+  "subject": "<subject>",
+  "mode": "guard | diagnose",
+  "scores": { "3m": 8, "6m": 6, "12m": 4 },
+  "criteria": {
+    "rides_model_gains": "green",
+    "scaffolding_exposure": "amber",
+    "agent_ready": "red",
+    "cost_latency_bet": "green",
+    "modality_fusion": "na",
+    "persistent_agent_overlap": "red",
+    "durable_moat": "green"
+  },
+  "revised_plan_required": true
+}
+```
+
+In an interactive session, the JSON block may be collapsed or omitted if the user finds it
+noisy; in autonomous runs it is mandatory.
 
 Rules for the output:
 

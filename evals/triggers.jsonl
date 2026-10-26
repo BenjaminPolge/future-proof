@@ -1,0 +1,18 @@
+{"id": "scratch-agent", "prompt": "Let's build a customer-support agent from scratch with LangGraph.", "cwd": "/repo/app", "hook": true, "skill": true}
+{"id": "new-saas", "prompt": "Build me a new SaaS that summarizes sales calls.", "cwd": "/repo", "hook": true, "skill": true}
+{"id": "v2", "prompt": "We're starting the v2 of the mobile app, here is the brief.", "cwd": "/repo/mobile", "hook": true, "skill": true}
+{"id": "rewrite-backend", "prompt": "Rewrite the backend in Rust with a new event-driven architecture.", "cwd": "/repo", "hook": true, "skill": true}
+{"id": "fr-refonte", "prompt": "On lance la refonte complète du moteur de recommandation.", "cwd": "/repo", "hook": true, "skill": true}
+{"id": "fr-zero", "prompt": "Crée-moi une nouvelle fonctionnalité de veille automatique, de zéro.", "cwd": "/repo", "hook": true, "skill": true}
+{"id": "es-cero", "prompt": "Quiero crear una nueva funcionalidad desde cero para el CRM.", "cwd": "/repo", "hook": true, "skill": true}
+{"id": "rag-no-keyword", "prompt": "Add a RAG pipeline over our 40k support articles, with reranking and a chat UI.", "cwd": "/repo", "hook": false, "skill": true}
+{"id": "bugfix-in-v2-path", "prompt": "Fix the off-by-one in the pagination of /orders.", "cwd": "/Users/dev/projects/shop-v2", "hook": false, "skill": false}
+{"id": "bugfix-in-mvp-path", "prompt": "The login test is flaky, can you look?", "cwd": "/Users/dev/mvp-refonte", "hook": false, "skill": false}
+{"id": "rename", "prompt": "Rename userId to accountId across the codebase.", "cwd": "/repo", "hook": false, "skill": false}
+{"id": "deps", "prompt": "Bump React to 19 and fix the warnings.", "cwd": "/repo", "hook": false, "skill": false}
+{"id": "pivot-table", "prompt": "Add a pivot table to the analytics export.", "cwd": "/repo", "hook": false, "skill": false}
+{"id": "migrate-db", "prompt": "Migrate the db schema to add a created_at column.", "cwd": "/repo", "hook": false, "skill": false}
+{"id": "rewrite-message", "prompt": "Rewrite this error message so it's friendlier.", "cwd": "/repo", "hook": false, "skill": false}
+{"id": "readme", "prompt": "Write the README for this repo.", "cwd": "/repo", "hook": false, "skill": false}
+{"id": "tests", "prompt": "Add tests for the invoice module.", "cwd": "/repo", "hook": false, "skill": false}
+{"id": "diagnose-fr", "prompt": "Est-ce que ce projet sera encore pertinent dans un an ?", "cwd": "/repo", "hook": false, "skill": true}
